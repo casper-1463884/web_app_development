@@ -19,13 +19,25 @@ class MenuPlan(db.Model):
 
     @staticmethod
     def create_plan(user_id, recipe_id, date, meal_type):
-        plan = MenuPlan(user_id=user_id, recipe_id=recipe_id, date=date, meal_type=meal_type)
-        db.session.add(plan)
-        db.session.commit()
-        return plan
+        """建立菜單計畫"""
+        try:
+            plan = MenuPlan(user_id=user_id, recipe_id=recipe_id, date=date, meal_type=meal_type)
+            db.session.add(plan)
+            db.session.commit()
+            return plan
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error creating menu plan: {e}")
+            return None
+
+    @staticmethod
+    def get_by_id(plan_id):
+        """取得單一菜單計畫"""
+        return MenuPlan.query.get(plan_id)
 
     @staticmethod
     def get_by_date_range(user_id, start_date, end_date):
+        """取得特定日期範圍內的菜單計畫"""
         return MenuPlan.query.filter(
             MenuPlan.user_id == user_id,
             MenuPlan.date >= start_date,
@@ -33,5 +45,12 @@ class MenuPlan(db.Model):
         ).order_by(MenuPlan.date, MenuPlan.meal_type).all()
 
     def delete(self):
-        db.session.delete(self)
-        db.session.commit()
+        """刪除菜單計畫"""
+        try:
+            db.session.delete(self)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error deleting menu plan: {e}")
+            return False

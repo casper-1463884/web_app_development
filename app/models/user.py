@@ -20,24 +20,56 @@ class User(db.Model):
 
     @staticmethod
     def create(username, password_hash, email):
-        user = User(username=username, password_hash=password_hash, email=email)
-        db.session.add(user)
-        db.session.commit()
-        return user
+        """
+        建立新使用者。
+        :param username: 帳號名稱
+        :param password_hash: 加密後的密碼
+        :param email: 電子郵件
+        :return: User 物件或 None
+        """
+        try:
+            user = User(username=username, password_hash=password_hash, email=email)
+            db.session.add(user)
+            db.session.commit()
+            return user
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error creating user: {e}")
+            return None
 
     @staticmethod
     def get_by_id(user_id):
+        """取得單一使用者"""
         return User.query.get(user_id)
 
     @staticmethod
     def get_all():
+        """取得所有使用者"""
         return User.query.all()
 
     def update(self, **kwargs):
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-        db.session.commit()
+        """
+        更新使用者資料。
+        """
+        try:
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error updating user: {e}")
+            return False
 
     def delete(self):
-        db.session.delete(self)
-        db.session.commit()
+        """
+        刪除使用者。
+        """
+        try:
+            db.session.delete(self)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error deleting user: {e}")
+            return False

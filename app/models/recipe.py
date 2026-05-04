@@ -34,24 +34,46 @@ class Recipe(db.Model):
 
     @staticmethod
     def create(title, instructions, user_id, **kwargs):
-        recipe = Recipe(title=title, instructions=instructions, user_id=user_id, **kwargs)
-        db.session.add(recipe)
-        db.session.commit()
-        return recipe
+        """建立新食譜"""
+        try:
+            recipe = Recipe(title=title, instructions=instructions, user_id=user_id, **kwargs)
+            db.session.add(recipe)
+            db.session.commit()
+            return recipe
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error creating recipe: {e}")
+            return None
 
     @staticmethod
     def get_all():
+        """取得所有食譜"""
         return Recipe.query.all()
 
     @staticmethod
     def get_by_id(recipe_id):
+        """取得單一食譜"""
         return Recipe.query.get(recipe_id)
 
     def update(self, **kwargs):
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-        db.session.commit()
+        """更新食譜內容"""
+        try:
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error updating recipe: {e}")
+            return False
 
     def delete(self):
-        db.session.delete(self)
-        db.session.commit()
+        """刪除食譜"""
+        try:
+            db.session.delete(self)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error deleting recipe: {e}")
+            return False
