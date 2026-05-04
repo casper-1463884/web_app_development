@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}{{ recipe.title }} - 智慧烹飪菜單系統{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-9">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('recipes.index') }}">食譜庫</a></li>
+                <li class="breadcrumb-item active">{{ recipe.title }}</li>
+            </ol>
+        </nav>
+
+        <div class="card p-5 mb-5">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div>
+                    <h1 class="display-6 fw-bold mb-2">{{ recipe.title }}</h1>
+                    <span class="badge bg-soft-primary text-primary" style="background: #eef2ff;">{{ recipe.category or '未分類' }}</span>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('recipes.edit', recipe_id=recipe.id) }}" class="btn btn-outline-secondary">編輯</a>
+                </div>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-md-12">
+                    <h4 class="fw-bold mb-3">簡介</h4>
+                    <p class="lead text-muted">{{ recipe.description or '這道菜還沒有簡介。' }}</p>
+                </div>
+            </div>
+
+            <hr class="my-4" style="opacity: 0.1;">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="fw-bold mb-4">料理步驟</h4>
+                    <div class="instructions-content" style="white-space: pre-wrap;">{{ recipe.instructions }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center">
+            <form action="{{ url_for('recipes.delete', recipe_id=recipe.id) }}" method="POST" onsubmit="return confirm('確定要刪除這道食譜嗎？');">
+                <button type="submit" class="btn btn-link text-danger text-decoration-none">刪除此食譜</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

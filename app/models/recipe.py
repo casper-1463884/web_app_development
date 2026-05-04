@@ -1,5 +1,6 @@
 from datetime import datetime
 from app import db
+from .ingredient import Ingredient
 
 # 食譜與食材的中間表
 recipe_ingredients = db.Table('recipe_ingredients',

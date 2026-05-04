@@ -27,6 +27,14 @@ def create_app():
     # 初始化外掛
     db.init_app(app)
 
+    with app.app_context():
+        # 匯入 Models 以確保 SQLAlchemy 註冊所有表與關聯
+        from .models.user import User
+        from .models.recipe import Recipe
+        from .models.ingredient import Ingredient
+        from .models.pantry import Pantry
+        from .models.menu import MenuPlan
+
     # 註冊 Blueprints (路由)
     from .routes.main import main_bp
     from .routes.recipes import recipes_bp
@@ -43,10 +51,15 @@ def create_app():
     return app
 
 def init_db():
-    """初始化資料庫（從 schema.sql 建立表）"""
+    """初始化資料庫"""
     app = create_app()
     with app.app_context():
-        # 這裡我們可以使用 SQLAlchemy 的 create_all() 
-        # 或者執行 schema.sql。因為我們已經寫了 Models，用 create_all() 更方便。
+        # 必須匯入所有 Models 才能正確建立資料表
+        from .models.user import User
+        from .models.recipe import Recipe
+        from .models.ingredient import Ingredient
+        from .models.pantry import Pantry
+        from .models.menu import MenuPlan
+        
         db.create_all()
         print("資料庫初始化完成！")
